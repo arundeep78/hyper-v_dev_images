@@ -195,3 +195,47 @@ Maybe there is some bug in the Windows 11 Hyper-V or some settings that I need t
 
 
 In comparison to WSL images Hyper-V VM .vhdx files are really huge. This one is 6GB already!
+
+## Optional: Install kubectl 
+
+microk8s has an inbuilt kubectl, but it is not so good with command completion. SO, I decided to install kubectl directly.
+
+There are [different ways to install kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/). Below is the procedure using binaries
+
+```zsh
+# Download Kubectl
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+
+# Install Kubectl
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+```
+
+- configure OhMyZSH plugin. update `~/.zshrc` file
+
+```zsh
+plugins = (
+  #other plugins
+  kubectl
+)
+```
+
+- Generate kube config file for microk8s
+
+```zsh
+cd $HOME
+mkdir .kube # if the directory already does not exist
+cd .kube
+microk8s config > config
+```
+
+This makes getting pods as easy as 
+
+```zsh
+$kgp -A
+NAMESPACE     NAME                                         READY   STATUS    RESTARTS      AGE
+kube-system   dashboard-metrics-scraper-69d9497b54-mzp6z   1/1     Running   2 (42m ago)   149m
+kube-system   calico-node-2bfbj                            1/1     Running   3 (42m ago)   11h
+kube-system   kubernetes-dashboard-585bdb5648-nd7cg        1/1     Running   4 (37m ago)   149m
+kube-system   calico-kube-controllers-68745cbffd-pk2f2     1/1     Running   3 (42m ago)   11h
+kube-system   metrics-server-679c5f986d-qk5z7              1/1     Running   3 (37m ago)   150m
+```
